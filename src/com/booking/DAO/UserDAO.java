@@ -5,7 +5,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import com.booking.member.Admin;
 import com.booking.member.Grade;
 import com.booking.member.Member;
 import com.dbutil.DBUtil;
@@ -51,36 +50,7 @@ public class UserDAO {
 		return null;
 	}
 
-	public Admin checkAdmin(String ID, String passwd) {
-		
-		Connection conn = null;
-		String sql = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			conn = DBUtil.getConnection();
-			sql = "SELECT * FROM ADMIN WHERE ID = ? AND PASSWD = ?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(1, ID);
-			pstmt.setString(2, passwd);
-			rs = pstmt.executeQuery(sql);
-			
-			if(rs.next()) {
-				String email = rs.getString("EMAIL");
-				String name = rs.getString("NAME");
-				return new Admin(ID, passwd, email, name);
-			}else {
-				return null;
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBUtil.executeClose(rs, pstmt, conn);
-		}
-		return null;
-	}
+
 
 	public static boolean checkIDDuplicate(String ID) { // 증복 아이디 확인
 		

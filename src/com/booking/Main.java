@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.booking.DAO.AdminDAO;
 import com.booking.DAO.UserDAO;
 import com.booking.member.Admin;
 import com.booking.member.Member;
@@ -15,11 +16,12 @@ public class Main {
 	static Admin admin;
 	static UserDAO userDAO;
 	static boolean loginStatus;
-
+	static AdminDAO adminDAO;
 
 	public Main(){
 		br = new BufferedReader(new InputStreamReader(System.in));
-		UserDAO userDAO = new UserDAO();
+		userDAO = new UserDAO();
+		adminDAO = new AdminDAO();
 		callMenu();
 	}
 
@@ -39,11 +41,11 @@ public class Main {
 					System.out.println("비밀번호를 입력해주세요");
 					String passwd = br.readLine();
 
-					if((admin = userDAO.checkAdmin(ID, passwd)) != null) {
+					if((admin = adminDAO.checkAdmin(ID, passwd)) != null) {
 						loginStatus = true;
 						System.out.println("admin 모드입니다");
 						AdminMenu adminMenu = new AdminMenu();
-						adminMenu.menu(br, admin);
+						adminMenu.menu(br, admin, adminDAO);
 						
 					}else if((member = userDAO.login(ID, passwd)) != null) {
 						loginStatus = true;
