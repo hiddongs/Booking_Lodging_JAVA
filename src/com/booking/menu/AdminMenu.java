@@ -1,4 +1,4 @@
-package com.booking;
+package com.booking.menu;
 
 import java.io.BufferedReader;
 import java.io.IOException;
