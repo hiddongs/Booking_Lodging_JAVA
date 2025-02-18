@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.booking.DAO.AccommodationDAO;
 import com.booking.DAO.AdminDAO;
+import com.booking.DAO.QnADAO;
 import com.booking.member.Admin;
 
 public class AdminMenu { // 어드민 메뉴 카테고리
@@ -49,10 +50,10 @@ public class AdminMenu { // 어드민 메뉴 카테고리
 	}
 
 	private void accommodationAdmin(BufferedReader br) {
-		
+
 		accommodationDAO = new AccommodationDAO();
 		int answer = Integer.MIN_VALUE;
-		
+
 		while(true) {
 			System.out.println("숙소관리 메뉴입니다.");
 			System.out.println("원하시는 메뉴를 선택해주세요");
@@ -92,7 +93,7 @@ public class AdminMenu { // 어드민 메뉴 카테고리
 				accommodation_address = br.readLine();
 				System.out.println("숙소에 대한 설명을 입력해주세요");
 				accommodation_description = br.readLine();
-				
+
 				while(true) {
 					try {
 						System.out.println("숙소의 가격을 입력해주세요");
@@ -107,8 +108,8 @@ public class AdminMenu { // 어드민 메뉴 카테고리
 				location_name = br.readLine();
 				System.out.println("숙소를 추천하는 계절을 입력해주세요");
 				String recommendation_season = br.readLine();
-				
-				
+
+
 				while(true) {
 					try {
 						System.out.println("수용가능한 숙소의 인원수를 입력해주세요");
@@ -124,14 +125,38 @@ public class AdminMenu { // 어드민 메뉴 카테고리
 				System.out.println("잘못된 입력입니다.");
 				continue;
 			}
-		
+
 		}
 	}
 
 
 
 	private void qnaManagement(BufferedReader br) {
-
+		int answer = Integer.MIN_VALUE;
+		QnADAO qnADAO = new QnADAO();
+		while(true) {
+			System.out.println("문의 관련 페이지 입니다.");
+			System.out.println("1.미답변 QnA 답변하기");
+			System.out.println("2.답변한 QnA 수정하기");
+			System.out.println("3.QnA 전체보기");
+			System.out.println("0. 뒤로가기");
+			try {
+				answer = Integer.parseInt(br.readLine());
+				if(answer != 1 && answer != 2 && answer != 3 && answer != 0) {
+					System.out.println("유효하지않은 입력입니다.");
+					continue;
+				}else {
+					break;
+				}
+			} catch (Exception e) {
+				System.out.println("비정상적인 입력입니다.");
+				continue;
+			}
+		}
+		
+		if(answer == 1) {
+			qnADAO.answerToQNA(br,admin);
+		}
 	}
 	private void couponManagement(BufferedReader br) {
 

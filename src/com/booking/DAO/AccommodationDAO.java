@@ -143,6 +143,40 @@ public class AccommodationDAO {
 		Connection conn = null;
 		PreparedStatement pstmtI = null;
 		PreparedStatement pstmtU = null;
+		String sqlI = null;
+		String sqlU = null;
+		
+		if(!checkSuspension(accommodation_id)) {
+			System.out.println("해당 숙소는 이미 영업가능 상태입니다.");
+			return;
+		}
+		
+		try {
+			System.out.println("재개 사유를 입력해주세요");
+			String reason = br.readLine();
+					
+			conn = DBUtil.getConnection();
+			sqlI = "INSERT INTO AMMD_MGMT (AMMD_MGMT_ID, ADMIN_ID, ACCOMMODATION_ID, MGMT_REASON, MGMT_DETAILS)"
+					+ " VALUES(AMMD_MGMT_SEQ.NEXTVAL, ? , ?, ?, '영업재개')";
+			sqlU = "UPDATE ACCOMMODATION SET ACCOMMODATION_STATUS = 1 WHERE ACCOMMODATION_ID = ?";	
+			pstmtI = conn.prepareStatement(sqlI);
+			pstmtI.setString(1, admin.getID());
+			pstmtI.setInt(2, accommodation_id);
+			pstmtI.setString(3, reason);
+			int insert = pstmtI.executeUpdate();
+			
+			pstmtU = conn.prepareStatement(sqlU);
+			pstmtU.setInt(1, accommodation_id);
+			int update = pstmtU.executeUpdate();
+			
+		} catch (SQLException | ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+			try {conn.rollback();} catch (SQLException e1) {}
+		} finally {
+			DBUtil.executeClose(null, pstmtU, conn);
+			try {conn.commit();} catch (SQLException e1) {}
+			System.out.println(accommodation_id + "번 숙소 영업재개완료");
+		}
 		
 		
 	}
@@ -177,7 +211,7 @@ public class AccommodationDAO {
 			int insert = pstmtI.executeUpdate();
 			int update = pstmtU.executeUpdate();
 			
-			System.out.println(accommodation_id + "번 숙소 영업정지완료");
+			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -190,6 +224,7 @@ public class AccommodationDAO {
 		} finally {
 			DBUtil.executeClose(null, pstmtU, conn);
 			try {conn.commit();} catch (SQLException e) {}
+			System.out.println(accommodation_id + "번 숙소 영업정지완료");
 		}
 
 
