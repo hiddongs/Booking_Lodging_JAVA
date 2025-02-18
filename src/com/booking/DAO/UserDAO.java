@@ -21,8 +21,10 @@ public class UserDAO {
 
 		try {
 			conn = DBUtil.getConnection();
-			sql = "";
+			sql = "SELECT * FROM USER WHERE USER_ID = ? AND PASSWORD = ?";
 			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, ID);
+			pstmt.setString(2, passwd);
 			rs = pstmt.executeQuery();
 			
 

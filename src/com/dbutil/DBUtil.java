@@ -11,7 +11,7 @@ public class DBUtil {
 
 	private static final String DB_DRIVER = "oracle.jdbc.OracleDriver";
 	private static final String DB_URL = "jdbc:oracle:thin:@localhost:1521:xe";
-	private static final String DB_ID = "user01";
+	private static final String DB_ID = "PROJECT_JDBC";
 	private static final String DB_PASSWORD = "1234";
 	
 	public static Connection getConnection() throws ClassNotFoundException, SQLException {
