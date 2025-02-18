@@ -64,48 +64,30 @@ public class AccommodationDAO {
 		return answer;
 	}
 
-	public void accommodation_suspension(int accommodation_id, int answer, BufferedReader br, Admin admin) { // 1. 영업정지 2. 영업재개
+	
 
+	private boolean checkSuspension(int accommodation_id) { // 입력된 숙소의 ID가 정지상태인지 확인하는 메서드 true
 		Connection conn = null;
-		PreparedStatement pstmtI = null;
-		PreparedStatement pstmtU = null;
-		String sqlI = null;
-		String sqlU = null;
+		PreparedStatement pstmt = null;
+		String sql = null;
+		ResultSet rs = null;
 		try {
-			System.out.println(accommodation_id+"번 숙소 영업 정지 메뉴입니다");
-			System.out.println("영업정지 사유를 입력해주세요");
-			String reason = br.readLine();
-			
 			conn = DBUtil.getConnection();
-			sqlI = "INSERT INTO AMMD_MGMT (AMMD_MGMT_ID, ADMIN_ID, ACCOMMODATION_ID, MGMT_REASON, MGMT_DETAILS)"
-					+ " VALUES(AMMD_MGMT_SEQ.NEXTVAL, ? , ?, ?, '영업정지')";
-			 sqlU = "UPDATE ACCOMMODATION SET ACCOMMODATION_STATUS = 0 WHERE ACCOMMODATION_ID = ?";	
-			pstmtI = conn.prepareStatement(sqlI);
-			pstmtU = conn.prepareStatement(sqlU);
-			pstmtI.setString(1, admin.getID());
-			pstmtI.setInt(2, accommodation_id);
-			pstmtI.setString(3, reason);
-			pstmtU.setInt(1, accommodation_id);
-			
-			int insert = pstmtI.executeUpdate();
-			int update = pstmtU.executeUpdate();
-			
-			System.out.println(accommodation_id + "번 숙소 영업정지완료");
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			try {conn.rollback();} catch (SQLException e1) {}
+			sql = "SELECT * FROM ACCOMMODATION WHERE ACCOMMODATION_ID = ? AND ACCOMMODATION_STATUS = 0";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, accommodation_id);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				return true; // 영업정지 상태라면 true 반환
+			}else {
+				return false;
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			DBUtil.executeClose(null, pstmtU, conn);
-			try {conn.commit();} catch (SQLException e) {}
+			DBUtil.executeClose(rs, pstmt, conn);
 		}
-
-
+		return false;
 	}
 
 	public void accommodation_management(BufferedReader br, AccommodationDAO accommodationDAO, Admin admin) {
@@ -149,8 +131,67 @@ public class AccommodationDAO {
 		if(answer == 0) {
 			return;
 		}else if(answer == 1) {
-			accommodationDAO.accommodation_suspension(accommodation_id, answer, br, admin);
+			accommodationDAO.accommodation_suspension(accommodation_id, br, admin);
+		}else if(answer == 2) {
+			accommodationDAO.accommodation_resume(accommodation_id,br,admin);
 		}
+
+	}
+
+	private void accommodation_resume(int accommodation_id, BufferedReader br, Admin admin) {
+
+		Connection conn = null;
+		PreparedStatement pstmtI = null;
+		PreparedStatement pstmtU = null;
+		
+		
+	}
+	private void accommodation_suspension(int accommodation_id, BufferedReader br, Admin admin) { 
+		//영업정지 메서드
+
+		Connection conn = null;
+		PreparedStatement pstmtI = null;
+		PreparedStatement pstmtU = null;
+		String sqlI = null;
+		String sqlU = null;
+		try {
+			if(checkSuspension(accommodation_id)) {
+				System.out.println("해당 숙소는 이미 영업정지 상태입니다.");
+				return;
+			}
+			System.out.println(accommodation_id+"번 숙소 영업 정지 메뉴입니다");
+			System.out.println("영업정지 사유를 입력해주세요");
+			String reason = br.readLine();
+			
+			conn = DBUtil.getConnection();
+			sqlI = "INSERT INTO AMMD_MGMT (AMMD_MGMT_ID, ADMIN_ID, ACCOMMODATION_ID, MGMT_REASON, MGMT_DETAILS)"
+					+ " VALUES(AMMD_MGMT_SEQ.NEXTVAL, ? , ?, ?, '영업정지')";
+			 sqlU = "UPDATE ACCOMMODATION SET ACCOMMODATION_STATUS = 0 WHERE ACCOMMODATION_ID = ?";	
+			pstmtI = conn.prepareStatement(sqlI);
+			pstmtU = conn.prepareStatement(sqlU);
+			pstmtI.setString(1, admin.getID());
+			pstmtI.setInt(2, accommodation_id);
+			pstmtI.setString(3, reason);
+			pstmtU.setInt(1, accommodation_id);
+			
+			int insert = pstmtI.executeUpdate();
+			int update = pstmtU.executeUpdate();
+			
+			System.out.println(accommodation_id + "번 숙소 영업정지완료");
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			try {conn.rollback();} catch (SQLException e1) {}
+			e.printStackTrace();
+		} finally {
+			DBUtil.executeClose(null, pstmtU, conn);
+			try {conn.commit();} catch (SQLException e) {}
+		}
+
 
 	}
 
